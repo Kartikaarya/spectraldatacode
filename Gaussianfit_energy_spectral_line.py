@@ -11,16 +11,19 @@ with open('/Users/kartikaarya/Downloads/Internship/CDL_data_41397.pkl',mode='rb'
 
 lam, time, spec = data
 
+# 4 to plot the spectrum itself, the width of each gaussian in the spectrum, ion temperature- Boron and ion speed 
 fig,ax = plt.subplots(4)
 
 ax[0].set_xlabel('lambda (A)')
 ax[0].set_ylabel('Signal (photons/s/steradian/m^2)')
-start_time=int(float(input('Start_time(1 - 10s):'))*100)+1
+# there is data form 0-10s in the file but it is quite noisy form 0-1s and 9-10s so the gauss_fit3 function fails. 
+start_time=int(float(input('Start_time(1 - 9s):'))*100)+1
 time_slices=int(input(f'Number of time slices that need to be plotted(0 - {(899-start_time)}): '))
 ax[0].plot(lam[0:512],spec[0,0:512,start_time:(start_time+time_slices)])
 new_lam=lam[0:512]
 new_spec=np.empty((time_slices,512),float)
 
+#stores the spectrum from start time to end time on a new array
 i=0
 while i<time_slices:
     new_spec[i]=spec[0,0:512,(start_time+i)]
@@ -46,6 +49,7 @@ width2_unc=np.delete(width2_unc,0)
 width3_unc=np.ndarray([])
 width3_unc=np.delete(width3_unc,0)
 
+# Rest wavelength corresponding to only one peak was found so shift was also calculated only for that one peak. 
 shift1=np.ndarray([])
 shift1=np.delete(shift1,0)
 shift1_unc=np.ndarray([])
@@ -93,9 +97,9 @@ a=0
 
 temp_peak1=np.ndarray([])
 temp_peak1=np.delete(temp_peak1,0)
-temp_unc1=np.ndarray([])
+temp_unc1=np.ndarray([]) # stores the uncertianty in the temperature
 temp_unc1=np.delete(temp_unc1,0)
-unc1=0
+unc1=0 # calculates the uncertainty in the temperature
 temp1=0
 e=1.6*10**-19
 while y<time_slices:
@@ -115,10 +119,10 @@ speed_peak1=np.delete(speed_peak1,0)
 
 speed=0
 z=0
-speed_unc1=np.ndarray([])
+speed_unc1=np.ndarray([]) # stores the uncertianty in the speed
 speed_unc1=np.delete(speed_unc1,0)
+sunc1=0 # calculates the uncertainty in the speed
 
-sunc1=0
 while z<time_slices:
     speed=((shift1[z])/(lam0_peak1))*c 
     speed_peak1=np.insert(speed_peak1,z,speed)
@@ -128,31 +132,7 @@ while z<time_slices:
     
 ax[3].errorbar(time[start_time:(start_time+time_slices)],speed_peak1[0:(time_slices)],yerr=speed_unc1[0:(time_slices)], fmt='c.', label='speed calculated from shift in peak 1')
 ax[3].set_xlabel('time (s)')
-ax[3].set_ylabel('speed (m/s)') 
-leg2 = ax[3].legend();
+ax[3].set_ylabel('speed (m/s)') leg2 = ax[3].legend();
 ax[3].legend(frameon=True, loc='upper center', ncol=1,fancybox=True, framealpha=1)
-print (speed_unc1, temp_unc1 )
 
-
-print(f'''lam {lam.shape}
-time {time.shape}
-spec {spec.shape}
-new_lam {new_lam.shape}
-new_spec {new_spec.shape}
-width1 {width1.shape}
-width2 {width2.shape}
-width3 {width3.shape}
-width1_unc {width1_unc.shape}
-width2_unc {width2_unc.shape}
-width3_unc {width3_unc.shape}
-shift1 {shift1.shape}
-shift1_unc {shift1_unc.shape}
-std_all {std_all.shape}
-temp_peak1 {temp_peak1.shape}
-temp_unc1 {temp_unc1.shape}
-unc1 {unc1.shape}
-temp1 {temp1.shape}
-speed_peak1 {speed_peak1.shape}
-speed {speed.shape}
-speed_unc1 {speed_unc1.shape}''')
 plt.show() 
